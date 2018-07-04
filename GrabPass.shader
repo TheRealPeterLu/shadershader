@@ -1,8 +1,3 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "Custom/GrabPass" 
 {
@@ -12,7 +7,6 @@ Shader "Custom/GrabPass"
 		_NormalMap ("Normal", 2D) = "white"{}
 		_Distortion ("Distortion", Range(-1,1)) = 0
 		_Color ("Color", Color) = (1,1,1,1)
-		//_CameraDepthTexture ("Camera Depth Texture", 2D) = "white"{}
     }
 	SubShader 
 	{
@@ -41,14 +35,12 @@ Shader "Custom/GrabPass"
                
             float _Distortion;
             fixed4 _Color;
-               
-            //sampler2D _CameraDepthTexture;
-               
-			struct appdata {
-				float4 vertex : POSITION;
-			 	float2 texcoord : TEXCOORD0;
-                 float3 normal : NORMAL;
-			};
+	    
+	    struct appdata {
+		float4 vertex : POSITION;
+		float2 texcoord : TEXCOORD0;
+                float3 normal : NORMAL;
+	    };
                
      
             struct v2f {
