@@ -1,12 +1,5 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Custom/GrabPass_HeatWave" 
+﻿
+Shader "Custom/BlackHole" 
 {
 	Properties
     {
@@ -78,7 +71,7 @@ Shader "Custom/GrabPass_HeatWave"
                 
                 fixed4 col = tex2Dproj(_GrabTexture, UNITY_PROJ_COORD(i.GrabUV));
                 
-                col.rgb = lerp(col.rgb, _Color.rgb, clamp(_Rim - dotProduct,0,1));
+                col.rgb = lerp(col.rgb, _Color.rgb, 1 - clamp(_Rim - pow(dotProduct, _DistortionDistance + 3),0,1));
 
                 return col;
             }

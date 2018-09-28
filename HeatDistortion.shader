@@ -1,19 +1,14 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+﻿// Upgrade NOTE: replaced 'texRECT' with 'tex2D'
 
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Custom/GrabPass_HeatWave" 
+Shader "Custom/DistortionHeatWave" 
 {
 	Properties
     {
 		_Distortion ("Distortion", Range(-5,5)) = 0
+        _DistortionCenter ("Center Distortion", Range(-5,5)) = 0
 		_Color ("Color", Color) = (1,1,1,1)
         _Rim("Rim", Range(0, 1)) = 0
-        _DistortionDistance ("Distortion Distance", Range(0,1)) = 0
+        _Hollowness("Hollowness", Range(0,1)) = 0
     }
 	SubShader 
 	{
@@ -38,7 +33,8 @@ Shader "Custom/GrabPass_HeatWave"
             sampler2D _GrabTexture;
             float _Distortion;
             float _Rim;
-            float _DistortionDistance;
+            float _Hollowness;
+            float _DistortionCenter;
             fixed4 _Color;
 
 			struct appdata {
@@ -55,6 +51,7 @@ Shader "Custom/GrabPass_HeatWave"
                 float3 viewDir : TEXCOORD2;
                 float4 worldPos : TEXCOORD3;
                 float3 normal : NORMAL;
+                float2 distortionMapUV : TEXCOORD4;
             };
      
             v2f vert (appdata v)
@@ -72,9 +69,22 @@ Shader "Custom/GrabPass_HeatWave"
      
             fixed4 frag (v2f i) : COLOR
             {
-                float dotProduct = dot(i.viewDir, i.normal);
+               
+                float dotProduct = saturate (dot(normalize(i.viewDir), normalize(i.normal)));
+                
+                if(dotProduct < _Hollowness)
+                {
+                    if(dotProduct > 0.2)
+                    {
+                        i.GrabUV.xy = i.GrabUV.xy + tan(dotProduct * 3.14 - _Hollowness) * _Distortion;
+                    }
+                }
+                else
+                {
+                    i.GrabUV.xy = i.GrabUV.xy + sin((1 - dotProduct) * 3.14 * 2) * _DistortionCenter;
+                }
 
-                i.GrabUV.xy = i.GrabUV.xy + _Distortion * (_DistortionDistance - dotProduct) * i.normal.zyx;
+                //i.GrabUV.xy = i.GrabUV.xy + _Distortion * (dotProduct - _Hollowness) * i.normal.zyx * (1 - dotProduct);
                 
                 fixed4 col = tex2Dproj(_GrabTexture, UNITY_PROJ_COORD(i.GrabUV));
                 
